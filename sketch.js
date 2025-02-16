@@ -1,59 +1,105 @@
 let button;
+let buttonPressed = 0; // 0 = normal, 1 = button pressed
+
+let textX = 210;
+let textY = 100;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  button = createButton('Oh, you found me...');
-  button.position(280, 320); // Below the red-pupil eye
+  button = createButton('Oh you found me');
+  button.position(280, 320);
   button.hide(); // Start hidden
+  button.mousePressed(() => {
+    buttonPressed = 1; // Switch to new page
+  });
+
+  // textX = width / 2;
+  // textY = height / 2;
 }
 
 function draw() {
+  if (buttonPressed === 1) {
+    newPage(); // Switch to eerie text page
+  } else {
+    mainPage(); // Normal flashlight interaction
+  }
+}
+
+function mainPage() {
   background(0);
 
-  // Define eye positions
+  // Flashlight effect
+  fill(255, 255, 255, 150);
+  noStroke();
+  ellipse(mouseX, mouseY, 80, 80);
+
+  // Eye positions
   let eyes = [
-    { x: 70, y: 70, w: 95, h: 58 },
-    { x: 280, y: 280, w: 100, h: 50 },
-    { x: 420, y: 170, w: 110, h: 70 }
+    { x: 70, y: 70, length: 95 },
+    { x: 280, y: 280, length: 100 },
+    { x: 420, y: 170, length: 110 }
   ];
 
-  let textShow = 0; // Track if the torch is near the red-pupil eye
+  let showButton = 0; // Track if near red-pupil eye
 
-  // Draw eyes only if torch is near
-  for (let eye of eyes) {
+  strokeWeight(5);
+
+  for (let i = 0; i < eyes.length; i++) {
+    let eye = eyes[i];
     let d = dist(mouseX, mouseY, eye.x, eye.y);
-    if (d < 80) { // Only show if within torch range
-      fill(255);
-      ellipse(eye.x, eye.y, eye.w, eye.h);
+    
+    if (d < 60) { // Only show if within range
+      stroke(255);
+      line(eye.x - eye.length / 2, eye.y, eye.x + eye.length / 2, eye.y);
 
-      fill(0);
       if (eye.x === 70) {
-        ellipse(60, 70, 50, 50);
-        ellipse(90, 70, 30, 30);
-      } else if (eye.x === 280) {
-        ellipse(280, 280, 45, 35);
-        fill(255, 0, 0);
-        ellipse(280, 280, 10, 10);
-        textShow = 1; // Torch is near the red-pupil eye
+        line(60, 70, 100, 70);
+        line(90, 70, 120, 70);
+      } else if (eye.x === 280) { // Red-pupil eye
+        line(280, 280, 280 + 50, 280);
+        stroke(255, 0, 0);
+        point(280, 280);
+        showButton = 1; // Show button when near this eye
       } else if (eye.x === 420) {
-        ellipse(420, 155, 45, 35);
-        ellipse(420, 185, 45, 35);
+        line(420, 155, 420 + 45, 155);
+        line(420, 185, 420 + 45, 185);
       }
     }
   }
 
-  // Show or hide the button based on the torch position
-  if (textShow) {
+  if (showButton) {
     button.show();
   } else {
     button.hide();
   }
+}
 
-  // 🔦 Torch (flashlight effect) - Moved to the end to appear on top
-  fill(255, 255, 255, 150);
-  ellipse(mouseX, mouseY, 80, 80);
-  
-  function windowResized() {
+function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
-}
+
+// function newPage() {
+//   background(0);
+//   button.hide();
+
+//   // Shaky text effect
+//   let jitterX = random(-1.5, 1.5);
+//   let jitterY = random(-1.5, 1.5);
+
+//   fill(255, 255, 255);
+//   stroke(0);
+//   textSize(20);
+//   textAlign(CENTER, TOP);
+ 
+//   // textFont(fontBold);
+//   text('Do me favour, you have to keep on. Whatever it is, DO NOT turn it off', textX + jitterX, textY + jitterY);
+
+  // "false" optionA
+  // button = createButton('Okay');
+  // button.position(130, 320);
+
+  // // optionB
+  // button = createButton('Not yet');
+  // button.position(200, 320);
+
+
